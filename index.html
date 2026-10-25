@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中学3年国語 歴史的仮名遣い マスタードリル</title>
+    <style>
+        :root {
+            --primary-color: #4a69bd;
+            --primary-dark: #1e3799;
+            --secondary-color: #f8c291;
+            --accent-color: #e55039;
+            --correct-color: #2ed573;
+            --incorrect-color: #ff4757;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #636e72;
+            --border-radius: 16px;
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+            border-bottom: 2px dashed #e1e8ef;
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--text-color);
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .rule-list {
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+
+        .rule-list h3 {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .rule-list ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+        }
+
+        .rule-list li {
+            position: relative;
+            padding-left: 18px;
+            color: #475569;
+        }
+
+        .rule-list li::before {
+            content: "・";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(74, 105, 189, 0.3);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e1e8ef;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .badge {
+            background-color: #e8f0fe;
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .question-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #1e293b;
+            word-break: break-all;
+        }
+
+        .answer-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: stretch;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 1.2rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: border-color 0.2s;
+        }
+
+        .answer-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            width: 110px;
+            padding: 0;
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        .feedback {
+            display: none;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            display: block;
+            background-color: #e6f9ed;
+            border-left: 6px solid var(--correct-color);
+            color: #1b4332;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background-color: #ffeef0;
+            border-left: 6px solid var(--incorrect-color);
+            color: #5c1d24;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .explanation {
+            font-size: 0.95rem;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #cbd5e1;
+            color: #475569;
+            text-align: left;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 2px;
+        }
+
+        .next-btn {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: #f1f5f9;
+            border: 6px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 24px;
+        }
+
+        .score-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .score-total {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .result-msg {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background-color: #94a3b8;
+        }
+
+        .btn-secondary:hover {
+            background-color: #64748b;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 16px;
+            }
+            .question-text {
+                font-size: 1.7rem;
+            }
+            .answer-form {
+                flex-direction: column;
+            }
+            .submit-btn {
+                width: 100%;
+                padding: 12px;
+            }
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>歴史的仮名遣い ドリル</h1>
+        <p class="subtitle">中学3年国語・現代仮名遣いへの直し方を復習しよう！</p>
+    </header>
+
+    <!-- スタート設定画面 -->
+    <div id="start-screen" class="screen active">
+        <div class="setting-group">
+            <label for="rule-select">出題ルールを選択：</label>
+            <select id="rule-select">
+                <option value="all">【総合】全ルールからランダム</option>
+                <option value="1">① 語頭以外の「は行」→「わ行」</option>
+                <option value="2">② 「ぢ・づ」→「じ・ず」</option>
+                <option value="3">③ 「ゐ・ゑ・を」→「い・え・お」</option>
+                <option value="4">④ 助動詞などの「む」→「ん」</option>
+                <option value="5">⑤ 「くわ・ぐわ」→「か・が」</option>
+                <option value="6">⑥ 母音連続による長音化（ア+ウ→オー 等）</option>
+            </select>
+        </div>
+
+        <div class="setting-group">
+            <label for="count-select">出題数：</label>
+            <select id="count-select">
+                <option value="20" selected>20 問</option>
+                <option value="30">30 問</option>
+                <option value="40">40 問</option>
+                <option value="50">50 問</option>
+            </select>
+        </div>
+
+        <div class="rule-list">
+            <h3>復習ルールのまとめ</h3>
+            <ul>
+                <li>語頭以外の「は・ひ・ふ・へ・ほ」は「わ・い・う・え・お」に直す</li>
+                <li>「ぢ・づ」は「じ・ず」に直す</li>
+                <li>「ゐ・ゑ・を」は「い・え・お」に直す</li>
+                <li>文末や助動詞の「む」は「ん」に直す</li>
+                <li>「くわ・ぐわ」は「か・が」に直す</li>
+                <li>長音化：「あ段＋う」→「オー」、「い段＋う」→「ユー」、「え段＋う」→「ヨー」</li>
+            </ul>
+        </div>
+
+        <button id="start-btn" class="btn">スタート！</button>
+    </div>
+
+    <!-- クイズ進行画面 -->
+    <div id="quiz-screen" class="screen">
+        <div class="quiz-header">
+            <span class="badge" id="rule-badge">ルール</span>
+            <span id="progress-text" style="font-size:0.9rem; font-weight:bold; color:var(--text-muted);">1 / 20</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-label">現代仮名遣いに直して、ひらがなで入力してください</div>
+            <div class="question-text" id="question-text">---</div>
+        </div>
+
+        <form id="quiz-form">
+            <div class="answer-form">
+                <input type="text" id="answer-input" class="answer-input" placeholder="ひらがなで入力" autocomplete="off" required>
+                <button type="submit" id="submit-btn" class="btn submit-btn">判定</button>
+            </div>
+        </form>
+
+        <div id="feedback" class="feedback">
+            <div class="feedback-title" id="feedback-title"></div>
+            <div class="explanation" id="explanation-box">
+                <div class="explanation-title">💡 解説</div>
+                <div id="explanation-text"></div>
+            </div>
+        </div>
+
+        <button id="next-btn" class="btn next-btn">次の問題へ</button>
+    </div>
+
+    <!-- 結果画面 -->
+    <div id="result-screen" class="screen">
+        <div class="result-card">
+            <h2>お疲れ様でした！</h2>
+            <p style="color:var(--text-muted); margin-bottom: 20px;">あなたの結果は...</p>
+            
+            <div class="score-circle">
+                <div class="score-number" id="score-percentage">0%</div>
+                <div class="score-total" id="score-detail">0 / 0 問正解</div>
+            </div>
+
+            <div class="result-msg" id="result-msg">素晴らしい！</div>
+
+            <div class="result-actions">
+                <button id="reset-btn" class="btn btn-secondary">設定に戻る</button>
+                <button id="retry-btn" class="btn">もう一度挑戦</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 問題データベース
+const questionBank = [
+    // Rule 1: 語頭以外の「は行」→「わ行」
+    { r: 1, q: "あふ", a: "おう", exp: "語頭以外の「ふ」は「う」に直します。（「あう」から長音化して「おう」になります）" },
+    { r: 1, q: "いふ", a: "いう", exp: "語頭以外の「ふ」は「う」に直します。" },
+    { r: 1, q: "おもふ", a: "おもう", exp: "語頭以外の「ふ」は「う」に直します。" },
+    { r: 1, q: "かほ", a: "かお", exp: "語頭以外の「ほ」は「お」に直します。" },
+    { r: 1, q: "こひ", a: "こい", exp: "語頭以外の「ひ」は「い」に直します。" },
+    { r: 1, q: "あはれ", a: "あわれ", exp: "語頭以外の「は」は「わ」に直します。" },
+    { r: 1, q: "うへ", a: "うえ", exp: "語頭以外の「へ」は「え」に直します。" },
+    { r: 1, q: "まへ", a: "まえ", exp: "語頭以外の「へ」は「え」に直します。" },
+    { r: 1, q: "かは", a: "かわ", exp: "語頭以外の「は」は「わ」に直します。" },
+    { r: 1, q: "やまはし", a: "やまわし", exp: "語頭以外の「は」は「わ」に直します。" },
+    { r: 1, q: "いとほし", a: "いとおし", exp: "語頭以外の「ほ」は「お」に直します。" },
+    { r: 1, q: "つひに", a: "ついに", exp: "語頭以外の「ひ」は「い」に直します。" },
+    { r: 1, q: "さひし", a: "さいし", exp: "語頭以外の「ひ」は「い」に直します。" },
+    { r: 1, q: "あゆへば", a: "あゆえば", exp: "語頭以外の「へ」は「え」に直します。" },
+    { r: 1, q: "いへ", a: "いえ", exp: "語頭以外の「へ」は「え」に直します。" },
+    { r: 1, q: "ぬへ", a: "ぬえ", exp: "語頭以外の「へ」は「え」に直します。" },
+    { r: 1, q: "おほし", a: "おおし", exp: "語頭以外の「ほ」は「お」に直します。" },
+    { r: 1, q: "たふとし", a: "とうとし", exp: "語頭以外の「ふ」は「う」になり、「たう」が長音化して「とう」になります。" },
+    { r: 1, q: "わらふ", a: "わらう", exp: "語頭以外の「ふ」は「う」に直します。" },
+    { r: 1, q: "ならふ", a: "ならう", exp: "語頭以外の「ふ」は「う」に直します。" },
+
+    // Rule 2: 「ぢ・づ」→「じ・ず」
+    { r: 2, q: "はなぢ", a: "はなじ", exp: "「ぢ」は「じ」に直します。" },
+    { r: 2, q: "みづ", a: "みず", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "うぢ", a: "うじ", exp: "「ぢ」は「じ」に直します。" },
+    { r: 2, q: "もみぢ", a: "もみじ", exp: "「ぢ」は「じ」に直します。" },
+    { r: 2, q: "ふなづち", a: "ふなずち", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "ちぢむ", a: "ちじむ", exp: "「ぢ」は「じ」に直します。" },
+    { r: 2, q: "づつ", a: "ずつ", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "つづき", a: "つずき", exp: "歴史的仮名遣いの基本ルールとして「づ」は「ず」に直します。" },
+    { r: 2, q: "まじなひぢ", a: "まじないじ", exp: "「ひ」→「い」、「ぢ」→「じ」に直します。" },
+    { r: 2, q: "いづく", a: "いずく", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "いづれ", a: "いずれ", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "わずらふぢ", a: "わずらうじ", exp: "「ふ」→「う」、「ぢ」→「じ」に直します。" },
+    { r: 2, q: "みづから", a: "みずから", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "うづむ", a: "うずむ", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "かづく", a: "かずく", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "ひざまづく", a: "ひざまずく", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "こづち", a: "こずち", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "よづこ", a: "よずこ", exp: "「づ」は「ず」に直します。" },
+    { r: 2, q: "あぢきなし", a: "あじきなし", exp: "「ぢ」は「じ」に直します。" },
+    { r: 2, q: "ふぢ", a: "ふじ", exp: "「ぢ」は「じ」に直します。" },
+
+    // Rule 3: 「ゐ・ゑ・を」→「い・え・お」
+    { r: 3, q: "ゐる", a: "いる", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "ゑむ", a: "えむ", exp: "「ゑ」は「え」に直します。" },
+    { r: 3, q: "をこ", a: "おこ", exp: "「を」は「お」に直します。" },
+    { r: 3, q: "ゐなか", a: "いなか", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "こゑ", a: "こえ", exp: "「ゑ」は「え」に直します。" },
+    { r: 3, q: "をんな", a: "おんな", exp: "「を」は「お」に直します。" },
+    { r: 3, q: "あふひゐ", a: "あおいい", exp: "「ふ」→「う」、「ゐ」→「い」に直します。" },
+    { r: 3, q: "ゑがく", a: "えがく", exp: "「ゑ」は「え」に直します。" },
+    { r: 3, q: "をり", a: "おり", exp: "「を」は「お」に直します。" },
+    { r: 3, q: "ゐし", a: "いし", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "ゆゑ", a: "ゆえ", exp: "「ゑ」は「え」に直します。" },
+    { r: 3, q: "をかし", a: "おかし", exp: "「を」は「お」に直します。" },
+    { r: 3, q: "とりゐ", a: "とりい", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "ゑへる", a: "ええる", exp: "「ゑ」→「え」、語頭以外の「へ」→「え」に直します。" },
+    { r: 3, q: "をぐら", a: "おぐら", exp: "「を」は「お」に直します。" },
+    { r: 3, q: "ゐのち", a: "いのち", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "ともゑ", a: "ともえ", exp: "「ゑ」は「え」に直します。" },
+    { r: 3, q: "をはる", a: "おわる", exp: "「を」→「お」、語頭以外の「は」→「わ」に直します。" },
+    { r: 3, q: "ひきゐる", a: "ひきいる", exp: "「ゐ」は「い」に直します。" },
+    { r: 3, q: "をぎ", a: "おぎ", exp: "「を」は「お」に直します。" },
+
+    // Rule 4: 助動詞などの「む」→「ん」
+    { r: 4, q: "書かむ", a: "かかん", exp: "意志・推量の助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "行かむ", a: "いかん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "言はむ", a: "いわん", exp: "「は」→「わ」、助動詞の「む」→「ん」に直します。" },
+    { r: 4, q: "思はむ", a: "おもわん", exp: "「は」→「わ」、助動詞の「む」→「ん」に直します。" },
+    { r: 4, q: "見む", a: "みん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "聞かむ", a: "きかん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "呼ばむ", a: "よばん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "咲かむ", a: "さかん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "走らむ", a: "はしらん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "読まむ", a: "よまん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "降らむ", a: "ふらん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "語らむ", a: "かたらん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "待たむ", a: "またん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "あらむ", a: "あらん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "せむ", a: "せん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "来む", a: "こん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "死なむ", a: "しなん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "迎へむ", a: "むかえん", exp: "「へ」→「え」、助動詞の「む」→「ん」に直します。" },
+    { r: 4, q: "明かさむ", a: "あかさん", exp: "助動詞の「む」は「ん」に直します。" },
+    { r: 4, q: "助けむ", a: "たすけん", exp: "助動詞の「む」は「ん」に直します。" },
+
+    // Rule 5: 「くわ・ぐわ」→「か・が」
+    { r: 5, q: "くわし", a: "かし", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "ぐわん", a: "がん", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "ひくわ", a: "ひか", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "くわこ", a: "かこ", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "ぐわんじつ", a: "がんじつ", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "くわぞく", a: "かぞく", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "くわいぐわ", a: "かいが", exp: "「くわ」→「か」、「ぐわ」→「が」に直します。" },
+    { r: 5, q: "ぐわいこく", a: "がいこく", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "んぐわ", a: "んが", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "くわんがへ", a: "かんがえ", exp: "「くわ」→「か」、語頭以外の「へ」→「え」に直します。" },
+    { r: 5, q: "くわいしゃ", a: "かいしゃ", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "ぐわんこ", a: "がんこ", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "くわのん", a: "かのん", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "さんくわ", a: "さんか", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "ぐわいけい", a: "がいけい", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "ちいくわ", a: "ちいか", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "けいぐわ", a: "けいが", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "くわいけい", a: "かいけい", exp: "「くわ」は「か」に直します。" },
+    { r: 5, q: "ぐわんりょう", a: "がんりょう", exp: "「ぐわ」は「が」に直します。" },
+    { r: 5, q: "つうくわ", a: "つうか", exp: "「くわ」は「か」に直します。" },
+
+    // Rule 6: 母音連続による長音化
+    { r: 6, q: "やうやく", a: "ようやく", exp: "「やう（や＋う）」は「よう（長音）」に変化します。（ア段＋う → オー）" },
+    { r: 6, q: "ちゃうしん", a: "ちょうしん", exp: "「ちゃ＋う」は「ちょう」になります。" },
+    { r: 6, q: "けふ", a: "きょう", exp: "「ふ」→「う」となり、「けう（け＋う）」が長音化して「きょう」になります。（エ段＋う → ヨー）" },
+    { r: 6, q: "てふてふ", a: "ちょうちょう", exp: "「てふ」→「てう」→「ちょう」となります。" },
+    { r: 6, q: "さうらふ", a: "そうろう", exp: "「さう」→「そう」、「らふ」→「らう」→「ろう」となります。" },
+    { r: 6, q: "やうなし", a: "ようなし", exp: "「やう」は「よう」に長音化します。" },
+    { r: 6, q: "きうり", a: "きゅうり", exp: "「きう（き＋う）」は「きゅう」に長音化します。（イ段＋う → ユー）" },
+    { r: 6, q: "いうゑん", a: "ゆうえん", exp: "「いう」→「ゆう」、「ゑ」→「え」になります。" },
+    { r: 6, q: "めうにち", a: "みょうにち", exp: "「めう」は「みょう」に長音化します。" },
+    { r: 6, q: "せうがっこう", a: "しょうがっこう", exp: "「せう」は「しょう」に長音化します。" },
+    { r: 6, q: "かうし", a: "こうし", exp: "「かう」は「こう」に長音化します。" },
+    { r: 6, q: "まうす", a: "もうす", exp: "「まう」は「もう」に長音化します。" },
+    { r: 6, q: "いうち", a: "うち", exp: "語頭以外の規則と合体し長音化します。" },
+    { r: 6, q: "にようぼう", a: "にょうぼう", exp: "「によう」は「にょう」に長音化します。" },
+    { r: 6, q: "いうびん", a: "ゆうびん", exp: "「いう」は「ゆう」に長音化します。" },
+    { r: 6, q: "べういん", a: "びょういん", exp: "「べう」は「びょう」に長音化します。" },
+    { r: 6, q: "たうじつ", a: "とうじつ", exp: "「たう」は「とう」に長音化します。" },
+    { r: 6, q: "へうじょう", a: "ひょうじょう", exp: "「へう」は「ひょう」に長音化します。" },
+    { r: 6, q: "いうめい", a: "ゆうめい", exp: "「いう」は「ゆう」に長音化します。" },
+    { r: 6, q: "らうじん", a: "ろうじん", exp: "「らう」は「ろう」に長音化します。" }
+];
+
+const ruleNames = {
+    "1": "ルール① は行→わ行",
+    "2": "ルール② ぢ・づ→じ・ず",
+    "3": "ルール③ ゐ・ゑ・を→い・え・お",
+    "4": "ルール④ む→ん",
+    "5": "ルール⑤ くわ・ぐわ→か・が",
+    "6": "ルール⑥ 長音化"
+};
+
+let currentQuiz = [];
+let currentIndex = 0;
+let score = 0;
+let isAnswered = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('quiz-form').addEventListener('submit', handleAnswer);
+    document.getElementById('next-btn').addEventListener('click', nextQuestion);
+    document.getElementById('reset-btn').addEventListener('click', () => showScreen('start-screen'));
+    document.getElementById('retry-btn').addEventListener('click', startQuiz);
+});
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function startQuiz() {
+    const selectedRule = document.getElementById('rule-select').value;
+    const totalCount = parseInt(document.getElementById('count-select').value, 10);
+
+    let filtered = [];
+    if (selectedRule === "all") {
+        filtered = questionBank;
+    } else {
+        const ruleNum = parseInt(selectedRule, 10);
+        filtered = questionBank.filter(q => q.r === ruleNum);
+    }
+
+    currentQuiz = shuffle(filtered).slice(0, Math.min(totalCount, filtered.length));
+    currentIndex = 0;
+    score = 0;
+
+    showScreen('quiz-screen');
+    renderQuestion();
+}
+
+function renderQuestion() {
+    isAnswered = false;
+    const q = currentQuiz[currentIndex];
+
+    document.getElementById('rule-badge').innerText = ruleNames[q.r] || "総合";
+    document.getElementById('progress-text').innerText = `${currentIndex + 1} / ${currentQuiz.length}`;
+    document.getElementById('progress-bar').style.width = `${((currentIndex) / currentQuiz.length) * 100}%`;
+    document.getElementById('question-text').innerText = q.q;
+
+    const input = document.getElementById('answer-input');
+    input.value = '';
+    input.disabled = false;
+    input.focus();
+
+    document.getElementById('submit-btn').style.display = 'block';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('next-btn').style.display = 'none';
+}
+
+function handleAnswer(e) {
+    e.preventDefault();
+    if (isAnswered) return;
+
+    const input = document.getElementById('answer-input');
+    const userAns = input.value.trim();
+    if (!userAns) return;
+
+    isAnswered = true;
+    input.disabled = true;
+    document.getElementById('submit-btn').style.display = 'none';
+
+    const q = currentQuiz[currentIndex];
+    const isCorrect = (userAns === q.a);
+
+    const feedbackEl = document.getElementById('feedback');
+    const titleEl = document.getElementById('feedback-title');
+    const expTextEl = document.getElementById('explanation-text');
+
+    if (isCorrect) {
+        score++;
+        feedbackEl.className = 'feedback correct';
+        titleEl.innerHTML = '⭕ 正解！';
+        expTextEl.innerText = q.exp;
+    } else {
+        feedbackEl.className = 'feedback incorrect';
+        titleEl.innerHTML = `❌ 不正解... （正解：${q.a}）`;
+        expTextEl.innerText = q.exp;
+    }
+
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < currentQuiz.length) {
+        renderQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('progress-bar').style.width = '100%';
+    showScreen('result-screen');
+
+    const total = currentQuiz.length;
+    const percentage = Math.round((score / total) * 100);
+
+    document.getElementById('score-percentage').innerText = `${percentage}%`;
+    document.getElementById('score-detail').innerText = `${total} 問中 ${score} 問正解`;
+
+    let msg = "";
+    if (percentage === 100) {
+        msg = "🎉 素晴らしい！歴史的仮名遣いは完璧です！";
+    } else if (percentage >= 80) {
+        msg = "👍 かなり惜しい！あと一歩で満点です！";
+    } else if (percentage >= 60) {
+        msg = "🙂 基本はできています！間違えたルールを復習しよう。";
+    } else {
+        msg = "📖 もう一度ルールを確認してチャレンジしてみよう！";
+    }
+    document.getElementById('result-msg').innerText = msg;
+}
+</script>
+
+</body>
+</html>
